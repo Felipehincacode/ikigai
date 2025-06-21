@@ -9,6 +9,7 @@
     --accent-color: #ffffff;
     --background-color: rgba(0, 0, 0, 0.8);
     --border-color: rgba(255, 255, 255, 0.3);
+    --text-color: #ffffff;
 }
 
 body {
@@ -149,48 +150,35 @@ body {
 
 .header {
     position: relative;
-    padding: 40px 30px;
+    padding: 25px 30px;
     background: var(--background-color);
     border-bottom: 1px solid var(--border-color);
     backdrop-filter: blur(10px);
     border-radius: 15px 15px 0 0;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     width: 100%;
     max-width: 1200px;
 }
 
 .title {
-    font-size: 3.5rem;
+    font-size: 2.8rem;
     font-weight: 300;
     text-align: center;
-    margin-bottom: 40px;
-    color: var(--primary-color);
-    letter-spacing: 5px;
+    margin-bottom: 25px;
+    color: #ffffff;
+    letter-spacing: 4px;
     text-transform: uppercase;
     position: relative;
 }
 
 .title::after {
-    content: '';
-    position: absolute;
-    bottom: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 2px;
-    background: var(--primary-color);
-    animation: titleLine 2s ease-in-out infinite;
-}
-
-@keyframes titleLine {
-    0%, 100% { width: 120px; }
-    50% { width: 200px; }
+    display: none;
 }
 
 .navigation {
     display: flex;
     justify-content: center;
-    gap: 25px;
+    gap: 20px;
     flex-wrap: wrap;
 }
 
@@ -199,11 +187,11 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #ffffff;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), -1px -1px 2px rgba(0, 0, 0, 0.8), 1px -1px 2px rgba(0, 0, 0, 0.8), -1px 1px 2px rgba(0, 0, 0, 0.8);
-    padding: 12px 20px;
+    padding: 10px 16px;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
+    transition: all 0.2s ease;
+    font-size: 13px;
     font-weight: 400;
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -245,18 +233,19 @@ body {
 }
 
 .content-panel {
-    background: var(--background-color);
+    background: rgba(0, 0, 0, 0.2);
     border-top: 1px solid var(--border-color);
-    padding: 50px 40px;
+    padding: 40px 30px;
     transform: translateY(100%);
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    max-height: 60vh;
+    transition: transform 0.3s ease;
+    max-height: 65vh;
     overflow-y: auto;
     border-radius: 0 0 15px 15px;
     width: 100%;
     max-width: 1200px;
-    margin-top: 20px;
-    color: var(--primary-color);
+    margin-top: -30px;
+    color: #ffffff;
+    backdrop-filter: blur(10px);
 }
 
 .content-panel.active {
@@ -266,8 +255,8 @@ body {
 .content-section {
     display: none;
     opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.5s ease;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
 }
 
 .content-section.active {
@@ -280,7 +269,7 @@ body {
     font-size: 2.5rem;
     margin-bottom: 40px;
     text-align: center;
-    color: var(--primary-color);
+    color: #ffffff;
     font-weight: 300;
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -288,14 +277,7 @@ body {
 }
 
 .content-section h2::after {
-    content: '';
-    position: absolute;
-    bottom: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 1px;
-    background: var(--primary-color);
+    display: none;
 }
 
 .content-grid {
@@ -310,11 +292,11 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 35px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    color: var(--primary-color);
+    color: #ffffff;
 }
 
 .content-card::before {
@@ -336,15 +318,15 @@ body {
 .content-card:hover {
     background: var(--accent-color);
     border-color: var(--primary-color);
-    color: var(--background-color);
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    color: #000000;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 .content-card h3 {
     font-size: 1.5rem;
     margin-bottom: 20px;
-    color: var(--primary-color);
+    color: #ffffff;
     font-weight: 400;
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -352,7 +334,7 @@ body {
 
 .content-card p {
     line-height: 1.8;
-    color: var(--primary-color);
+    color: #ffffff;
     font-size: 16px;
 }
 
@@ -371,7 +353,7 @@ body {
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     font-size: 13px;
     font-weight: 400;
     letter-spacing: 1px;
@@ -454,21 +436,20 @@ body {
 .main-purpose h3 {
     font-size: 2rem;
     margin-bottom: 30px;
-    color: var(--primary-color);
+    text-align: center;
+    color: #ffffff;
     font-weight: 400;
     letter-spacing: 2px;
-    position: relative;
-    z-index: 1;
     text-transform: uppercase;
+    line-height: 1.4;
 }
 
 .main-purpose p {
-    font-size: 1.2rem;
     line-height: 1.8;
-    color: var(--primary-color);
-    position: relative;
-    z-index: 1;
-    margin-bottom: 25px;
+    color: #ffffff;
+    font-size: 16px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .floating-controls {
@@ -523,47 +504,68 @@ body {
 /* Responsive Design */
 @media (max-width: 768px) {
     .title {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        letter-spacing: 3px;
+    }
+    
+    .header {
+        padding: 20px 20px;
+        margin-bottom: 15px;
     }
     
     .navigation {
-        gap: 10px;
+        gap: 8px;
     }
     
     .nav-btn {
-        padding: 10px 15px;
-        font-size: 12px;
+        padding: 8px 12px;
+        font-size: 11px;
+        letter-spacing: 0.5px;
     }
     
     .content-panel {
-        padding: 20px;
+        padding: 25px 20px;
         max-height: 70vh;
+        margin-top: -20px;
     }
     
     .content-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
     
-    .floating-controls {
-        right: 15px;
-    }
-    
-    .control-btn {
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
+    .content-card {
+        padding: 25px;
     }
     
     .content-section h2 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+        margin-bottom: 30px;
     }
     
     .main-purpose {
-        padding: 30px;
+        padding: 25px;
+        margin-top: 30px;
     }
     
     .main-purpose h3 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
+    }
+    
+    .grain-switch,
+    .sound-switch {
+        width: 45px;
+        height: 45px;
+        top: 15px;
+    }
+    
+    .grain-switch {
+        right: 15px;
+    }
+    
+    .sound-switch {
+        right: 70px;
     }
 }
 
@@ -583,76 +585,7 @@ body {
 }
 
 #ui-overlay * {
-    pointer-events: all;
-}
-
-/* Modal de bienvenida para el ruido */
-.modal-ruido {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: var(--background-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    transition: opacity 0.3s;
-}
-
-.modal-ruido[hidden] {
-    display: none;
-}
-
-.modal-content {
-    background: var(--background-color);
-    border-radius: 12px;
-    padding: 2.5rem 2rem;
-    box-shadow: 0 8px 32px var(--border-color);
-    text-align: center;
-    color: var(--primary-color);
-    min-width: 260px;
-}
-
-.switch-btn {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #ffffff;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), -1px -1px 2px rgba(0, 0, 0, 0.8), 1px -1px 2px rgba(0, 0, 0, 0.8), -1px 1px 2px rgba(0, 0, 0, 0.8);
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(5px);
     pointer-events: auto;
-}
-.switch-btn.secondary {
-    background: var(--background-color);
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-}
-.switch-btn:hover {
-    background: rgba(255, 255, 255, 0.9);
-    color: #000000;
-    text-shadow: none;
-    border-color: rgba(0, 0, 0, 0.3);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-}
-.switch-btn.secondary:hover {
-    background: rgba(255, 255, 255, 0.9);
-    color: #000000;
-    text-shadow: none;
-    border-color: rgba(0, 0, 0, 0.3);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
 /* Switch minimalista para el ruido */
@@ -669,7 +602,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     backdrop-filter: blur(5px);
     z-index: 100;
 }
@@ -728,7 +661,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     backdrop-filter: blur(5px);
     z-index: 100;
 }

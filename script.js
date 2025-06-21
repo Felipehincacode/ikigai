@@ -10,8 +10,8 @@ function init() {
     setupEventListeners();
     hideLoadingScreen();
     showContent();
-    showGrainModal();
     setupVideoBackground();
+    setGrain(true); // Activar grano por defecto
 }
 
 // Setup event listeners
@@ -26,13 +26,6 @@ function setupEventListeners() {
             navigateToSection(section);
         });
     });
-
-    // Modal de bienvenida para el ruido
-    const modal = document.getElementById('modal-ruido');
-    const btnSi = document.getElementById('switch-grain');
-    const btnNo = document.getElementById('switch-no-grain');
-    if (btnSi) btnSi.onclick = () => { setGrain(true); hideGrainModal(); };
-    if (btnNo) btnNo.onclick = () => { setGrain(false); hideGrainModal(); };
 
     // Switch minimalista para el ruido
     const grainSwitch = document.getElementById('grain-switch');
@@ -125,7 +118,7 @@ function navigateToSection(section) {
 
     setTimeout(() => {
         isAnimating = false;
-    }, 600);
+    }, 300);
 }
 
 // Change interface colors based on Ikigai section
@@ -306,16 +299,6 @@ function showContent() {
             contentPanel.classList.add('active');
         }, 1800);
     }
-}
-
-// Modal de bienvenida para el ruido
-function showGrainModal() {
-    const modal = document.getElementById('modal-ruido');
-    if (modal) modal.removeAttribute('hidden');
-}
-function hideGrainModal() {
-    const modal = document.getElementById('modal-ruido');
-    if (modal) modal.setAttribute('hidden', '');
 }
 
 // Switch minimalista para el ruido
