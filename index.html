@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ikigai de Felipe - Experiencia Cinematográfica</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader">
+            <div class="loader-text">CARGANDO...</div>
+            <div class="loader-bar">
+                <div class="loader-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de bienvenida para el ruido -->
+    <div id="modal-ruido" class="modal-ruido">
+        <div class="modal-content">
+            <p>¿Quieres activar el efecto de ruido de película?</p>
+            <button class="switch-btn" id="switch-grain">Sí</button>
+            <button class="switch-btn secondary" id="switch-no-grain">No</button>
+        </div>
+    </div>
+
+    <!-- Fondo de video vintage alegre -->
+    <div class="background-video">
+        <video id="vintage-video" autoplay loop muted playsinline></video>
+        <div class="ocean-waves"></div>
+    </div>
+
+    <div class="film-grain"></div>
+    
+    <div id="ui-overlay" class="centered-content">
+        <header class="header">
+            <h1 class="title">IKIGAI DE FELIPE</h1>
+            <div class="navigation">
+                <button class="nav-btn active" data-section="intro">INICIO</button>
+                <button class="nav-btn" data-section="love">AMOR</button>
+                <button class="nav-btn" data-section="skills">HABILIDADES</button>
+                <button class="nav-btn" data-section="money">VALOR</button>
+                <button class="nav-btn" data-section="world">MUNDO</button>
+                <button class="nav-btn" data-section="ikigai">MI IKIGAI</button>
+            </div>
+        </header>
+
+        <div id="content-panel" class="content-panel">
+            <div class="content-section active" id="intro">
+                <h2>BIENVENIDO A MI IKIGAI</h2>
+                <p>Una experiencia cinematográfica que navega por el océano de mi propósito, explorando las profundidades de mis pasiones y el horizonte de mis sueños.</p>
+                <div class="cta-buttons">
+                    <button class="cta-btn primary" onclick="startJourney()">INICIAR NAVEGACIÓN</button>
+                </div>
+            </div>
+
+            <div class="content-section" id="love">
+                <h2>LO QUE AMO</h2>
+                <div class="content-grid">
+                    <div class="content-card">
+                        <h3>HISTORIAS VISUALES</h3>
+                        <p>Capturar la belleza del mundo a través de la lente, transformando momentos en narrativas visuales que conmueven el alma.</p>
+                    </div>
+                    <div class="content-card">
+                        <h3>MÚSICA CON EMOCIÓN</h3>
+                        <p>Sonidos que crean texturas y envuelven el alma, música que transporta y conecta con las profundidades del ser.</p>
+                    </div>
+                    <div class="content-card">
+                        <h3>NATURALEZA Y MEDITACIÓN</h3>
+                        <p>Conexión profunda con la tierra y el silencio, encontrando paz en la simplicidad de lo natural.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section" id="skills">
+                <h2>LO QUE SÉ HACER BIEN</h2>
+                <div class="content-grid">
+                    <div class="content-card">
+                        <h3>PSICOLOGÍA E INTROSPECCIÓN</h3>
+                        <p>Observar el mundo y traducirlo en emociones, comprendiendo las profundidades de la mente humana.</p>
+                    </div>
+                    <div class="content-card">
+                        <h3>UX/UI Y PROGRAMACIÓN</h3>
+                        <p>Crear experiencias digitales intuitivas que conecten tecnología y humanidad de forma armoniosa.</p>
+                    </div>
+                    <div class="content-card">
+                        <h3>COMUNICACIÓN VISUAL</h3>
+                        <p>Narrar historias a través de imágenes, creando puentes entre ideas y emociones.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section" id="money">
+                <h2>POR LO QUE ME PUEDEN PAGAR</h2>
+                <div class="content-grid">
+                    <div class="content-card">
+                        <h3>DESARROLLO WEB</h3>
+                        <p>Soluciones tecnológicas con sentido y estética, donde la funcionalidad se encuentra con la belleza.</p>
+                    </div>
+                    <div class="content-card">
+                        <h3>APPS CREATIVAS</h3>
+                        <p>Herramientas para creadores y soñadores, aplicaciones que inspiran y facilitan la expresión.</p>
+                    </div>
+                    <div class="content-card">
+                        <h3>SERVICIOS AUDIOVISUALES</h3>
+                        <p>Contenido auténtico y narrativas visuales que conectan con la esencia de las historias.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section" id="world">
+                <h2>LO QUE EL MUNDO NECESITA</h2>
+                <div class="content-grid">
+                    <div class="content-card">
+                        <h3>HISTORIAS HUMANAS</h3>
+                        <p>Puentes entre el alma y la tecnología, creando conexiones auténticas en un mundo digital.</p>
+                    </div>
+                    <div class="content-card">
+                        <h3>EDUCACIÓN CON ALMA</h3>
+                        <p>Herramientas que inspiren y transformen, educación que nutra tanto la mente como el corazón.</p>
+                    </div>
+                    <div class="content-card">
+                        <h3>TECNOLOGÍA CONSCIENTE</h3>
+                        <p>Espacios para sanar y compartir, tecnología que sirva al crecimiento personal y colectivo.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section" id="ikigai">
+                <h2>MI IKIGAI</h2>
+                <div class="ikigai-center">
+                    <div class="main-purpose">
+                        <h3>CREAR EXPERIENCIAS QUE INTEGREN ARTE, TECNOLOGÍA Y CONCIENCIA</h3>
+                        <p>Mi propósito es construir una vida y un trabajo que se alimenten mutuamente, desde el arte, la espiritualidad, el conocimiento y la transformación personal. Integrar mis sombras y mis luces para sanar, compartir, y ayudar a otros a expresarse desde su verdad.</p>
+                        <p>Como un barco navegando en el océano de la existencia, mi misión es crear puentes entre lo digital y lo humano, entre la tecnología y el alma, entre la innovación y la sabiduría ancestral.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+  </div>
+
+    <!-- Switch minimalista para el ruido -->
+    <button id="grain-switch" class="grain-switch" title="Alternar ruido de película">
+        <span class="grain-icon">🎞️</span>
+        <span class="switch-slider"></span>
+    </button>
+
+    <!-- Switch minimalista para el sonido -->
+    <button id="sound-switch" class="sound-switch" title="Alternar sonido de fondo">
+        <span class="sound-icon">🔊</span>
+        <span class="switch-slider"></span>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>

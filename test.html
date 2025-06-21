@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Ikigai</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .test-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px;
+            border: 1px solid #ffffff;
+            border-radius: 10px;
+        }
+        button {
+            background: transparent;
+            border: 1px solid #ffffff;
+            color: #ffffff;
+            padding: 15px 30px;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-content">
+        <h1>Test de Funcionalidad</h1>
+        <p>Si puedes ver este texto, el HTML y CSS básico funcionan correctamente.</p>
+        <button onclick="testFunction()">Probar JavaScript</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function testFunction() {
+            document.getElementById('result').innerHTML = '¡JavaScript funciona correctamente!';
+        }
+        
+        // Test de carga
+        window.addEventListener('load', function() {
+            console.log('Página cargada correctamente');
+        });
+    </script>
+</body>
+</html> 
