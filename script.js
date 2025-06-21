@@ -2,7 +2,7 @@
 let currentSection = 'intro';
 let isAnimating = false;
 let grainActive = true;
-let soundActive = false;
+let soundActive = true; // Audio activado por defecto
 
 // Initialize the application
 function init() {
@@ -12,6 +12,7 @@ function init() {
     showContent();
     setupVideoBackground();
     setGrain(true); // Activar grano por defecto
+    setSound(true); // Activar sonido por defecto
 }
 
 // Setup event listeners
@@ -326,6 +327,27 @@ function setGrain(active) {
     }
 }
 
+// Switch minimalista para el sonido
+function setSound(active) {
+    soundActive = active;
+    const video = document.getElementById('vintage-video');
+    const soundSwitch = document.getElementById('sound-switch');
+    
+    if (video) {
+        video.muted = !active;
+    }
+    
+    if (soundSwitch) {
+        if (active) {
+            soundSwitch.classList.add('active');
+            soundSwitch.classList.remove('muted');
+        } else {
+            soundSwitch.classList.remove('active');
+            soundSwitch.classList.add('muted');
+        }
+    }
+}
+
 // Video de fondo vintage alegre
 function setupVideoBackground() {
     const video = document.getElementById('vintage-video');
@@ -337,7 +359,7 @@ function setupVideoBackground() {
         // Configurar para móviles
         video.setAttribute('playsinline', '');
         video.setAttribute('webkit-playsinline', '');
-        video.muted = true; // Comenzar silenciado por políticas de móviles
+        video.muted = false; // Audio habilitado por defecto
         
         // Habilitar audio con interacción del usuario
         const enableAudio = () => {
