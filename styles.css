@@ -418,19 +418,7 @@ body {
 }
 
 .main-purpose::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, transparent 30%, var(--accent-color) 50%, transparent 70%);
-    animation: scan 4s linear infinite;
-}
-
-@keyframes scan {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    display: none;
 }
 
 .main-purpose h3 {
@@ -672,14 +660,33 @@ body {
     box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 .sound-switch .sound-icon {
-    font-size: 18px;
+    width: 20px;
+    height: 20px;
     transition: all 0.3s ease;
+    color: #ffffff;
 }
 .sound-switch.active .sound-icon {
     color: rgba(0, 255, 0, 0.8);
 }
 .sound-switch.muted .sound-icon {
     color: rgba(255, 0, 0, 0.8);
+}
+
+/* Mostrar/ocultar iconos según el estado */
+.sound-switch.active .sound-on {
+    display: block;
+}
+
+.sound-switch.active .sound-off {
+    display: none;
+}
+
+.sound-switch.muted .sound-on {
+    display: none;
+}
+
+.sound-switch.muted .sound-off {
+    display: block;
 }
 
 /* Eliminar controles flotantes antiguos */

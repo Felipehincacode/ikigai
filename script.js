@@ -257,7 +257,20 @@ function toggleSound() {
     const soundSwitch = document.getElementById('sound-switch');
     
     if (video) {
-        video.muted = !soundActive;
+        if (soundActive) {
+            // Intentar habilitar el audio
+            video.muted = false;
+            
+            // En móviles, intentar reproducir para habilitar audio
+            if (video.paused) {
+                video.play().catch(error => {
+                    console.log('No se pudo reproducir automáticamente:', error);
+                    // El usuario necesitará interactuar para habilitar audio
+                });
+            }
+        } else {
+            video.muted = true;
+        }
     }
     
     if (soundSwitch) {
@@ -321,6 +334,23 @@ function setupVideoBackground() {
         video.src = 'assets/videos/Max Richter - November  (Music Video 2024).mp4';
         video.load();
         
+        // Configurar para móviles
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        video.muted = true; // Comenzar silenciado por políticas de móviles
+        
+        // Habilitar audio con interacción del usuario
+        const enableAudio = () => {
+            if (video.muted && soundActive) {
+                video.muted = false;
+                console.log('Audio habilitado por interacción del usuario');
+            }
+        };
+        
+        // Eventos para habilitar audio
+        document.addEventListener('click', enableAudio, { once: true });
+        document.addEventListener('touchstart', enableAudio, { once: true });
+        
         // Manejar errores de carga del video
         video.addEventListener('error', function() {
             console.log('Error cargando el video, usando fallback');
@@ -334,6 +364,15 @@ function setupVideoBackground() {
         // Log cuando el video se carga correctamente
         video.addEventListener('loadeddata', function() {
             console.log('Video cargado correctamente');
+        });
+        
+        // Manejar cambios en el estado de reproducción
+        video.addEventListener('play', function() {
+            console.log('Video reproduciéndose');
+        });
+        
+        video.addEventListener('pause', function() {
+            console.log('Video pausado');
         });
     }
 }
