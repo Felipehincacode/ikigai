@@ -197,7 +197,6 @@ body {
     text-transform: uppercase;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(5px);
     pointer-events: auto;
 }
 
@@ -360,7 +359,6 @@ body {
     text-transform: uppercase;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(5px);
     pointer-events: auto;
 }
 
@@ -591,7 +589,6 @@ body {
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    backdrop-filter: blur(5px);
     z-index: 100;
 }
 .grain-switch:hover {
@@ -650,7 +647,6 @@ body {
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    backdrop-filter: blur(5px);
     z-index: 100;
 }
 .sound-switch:hover {
@@ -666,7 +662,7 @@ body {
     color: #ffffff;
 }
 .sound-switch.active .sound-icon {
-    color: rgba(0, 255, 0, 0.8);
+    color: rgba(253, 253, 253, 0.8);
 }
 .sound-switch.muted .sound-icon {
     color: rgba(255, 0, 0, 0.8);
