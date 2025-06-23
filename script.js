@@ -407,6 +407,7 @@ function setupVideo(video, videoPath) {
     const videoLoadingText = document.querySelector('.video-loading-text');
     if (videoLoadingText) {
         videoLoadingText.style.display = 'block';
+        videoLoadingText.textContent = 'Cargando video...';
     }
     video.setAttribute('autoplay', '');
     video.setAttribute('loop', '');
@@ -417,6 +418,14 @@ function setupVideo(video, videoPath) {
     video.muted = false;
     video.src = videoPath;
     video.load();
+    let videoLoadTimeout = setTimeout(() => {
+        if (!videoReady) {
+            if (videoLoadingText) videoLoadingText.textContent = 'No se pudo cargar el video. Usando fondo alternativo.';
+            setupFallback();
+            videoReady = true;
+            showContent();
+        }
+    }, 5000); // 5 segundos máximo
     video.addEventListener('loadedmetadata', function() {
         video.currentTime = 10;
         if (videoLoadingText) videoLoadingText.textContent = 'Video cargado, iniciando reproducción...';
@@ -425,10 +434,12 @@ function setupVideo(video, videoPath) {
         if (videoLoadingText) videoLoadingText.textContent = 'Video listo!';
         videoReady = true;
         video.currentTime = 10;
+        clearTimeout(videoLoadTimeout);
         startVideoPlayback();
     });
     video.addEventListener('error', function(e) {
-        if (videoLoadingText) videoLoadingText.textContent = 'Usando fondo alternativo...';
+        if (videoLoadingText) videoLoadingText.textContent = 'No se pudo cargar el video. Usando fondo alternativo.';
+        clearTimeout(videoLoadTimeout);
         setupFallback();
         videoReady = true;
         showContent();
@@ -438,13 +449,6 @@ function setupVideo(video, videoPath) {
     });
     video.addEventListener('pause', function() {});
     video.addEventListener('volumechange', function() {});
-    setTimeout(() => {
-        if (!videoReady) {
-            if (videoLoadingText) videoLoadingText.textContent = 'Contenido listo!';
-            videoReady = true;
-            showContent();
-        }
-    }, 5000);
 }
 
 // Función para iniciar la reproducción del video
