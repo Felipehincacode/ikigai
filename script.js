@@ -404,91 +404,43 @@ function setupVideoBackground() {
 }
 
 function setupVideo(video, videoPath) {
-    // Mostrar indicador de carga del video
     const videoLoadingText = document.querySelector('.video-loading-text');
     if (videoLoadingText) {
         videoLoadingText.style.display = 'block';
     }
-    
-    // Configurar para reproducción automática
     video.setAttribute('autoplay', '');
     video.setAttribute('loop', '');
     video.setAttribute('playsinline', '');
     video.setAttribute('webkit-playsinline', '');
-    video.setAttribute('preload', 'auto'); // Precargar el video
-    
-    // Configurar volumen y estado inicial
+    video.setAttribute('preload', 'auto');
     video.volume = 0.7;
-    video.muted = true; // Comenzar silenciado por políticas de navegador
-    
-    // Establecer la fuente del video
+    video.muted = false;
     video.src = videoPath;
-    
-    // Cargar el video
     video.load();
-    
-    // Eventos de carga del video
     video.addEventListener('loadedmetadata', function() {
-        console.log('Metadatos del video cargados');
-        if (videoLoadingText) {
-            videoLoadingText.textContent = 'Video cargado, iniciando reproducción...';
-        }
+        video.currentTime = 10;
+        if (videoLoadingText) videoLoadingText.textContent = 'Video cargado, iniciando reproducción...';
     });
-    
     video.addEventListener('loadeddata', function() {
-        console.log('Video cargado correctamente');
-        if (videoLoadingText) {
-            videoLoadingText.textContent = 'Video listo!';
-        }
+        if (videoLoadingText) videoLoadingText.textContent = 'Video listo!';
         videoReady = true;
-        // Si el usuario ya pidió sonido, activarlo ahora
-        if (pendingUnmute) {
-            video.muted = false;
-            video.volume = 0.7;
-            pendingUnmute = false;
-        }
+        video.currentTime = 10;
         startVideoPlayback();
     });
-    
-    // Manejar errores de carga del video
     video.addEventListener('error', function(e) {
-        console.log('Error cargando el video:', e);
-        if (videoLoadingText) {
-            videoLoadingText.textContent = 'Usando fondo alternativo...';
-        }
+        if (videoLoadingText) videoLoadingText.textContent = 'Usando fondo alternativo...';
         setupFallback();
-        // Mostrar contenido incluso si hay error
         videoReady = true;
         showContent();
     });
-    
-    // Manejar cambios en el estado de reproducción
     video.addEventListener('play', function() {
-        console.log('Video reproduciéndose');
         videoStarted = true;
-        // Si el usuario ya pidió sonido, activarlo ahora
-        if (pendingUnmute) {
-            video.muted = false;
-            video.volume = 0.7;
-            pendingUnmute = false;
-        }
     });
-    
-    video.addEventListener('pause', function() {
-        console.log('Video pausado');
-    });
-    
-    video.addEventListener('volumechange', function() {
-        console.log('Volumen cambiado:', video.volume, 'Muted:', video.muted);
-    });
-    
-    // Timeout de seguridad: mostrar contenido después de 5 segundos máximo
+    video.addEventListener('pause', function() {});
+    video.addEventListener('volumechange', function() {});
     setTimeout(() => {
         if (!videoReady) {
-            console.log('Timeout de carga del video, mostrando contenido');
-            if (videoLoadingText) {
-                videoLoadingText.textContent = 'Contenido listo!';
-            }
+            if (videoLoadingText) videoLoadingText.textContent = 'Contenido listo!';
             videoReady = true;
             showContent();
         }
@@ -499,14 +451,11 @@ function setupVideo(video, videoPath) {
 function startVideoPlayback() {
     const video = document.getElementById('vintage-video');
     if (!video || videoStarted) return;
-    
+    video.currentTime = 10;
     video.play().then(() => {
-        console.log('Video reproduciéndose automáticamente');
         videoStarted = true;
         showContent();
-    }).catch(error => {
-        console.log('No se pudo reproducir automáticamente:', error);
-        // Aún así mostrar contenido si el video está cargado
+    }).catch(() => {
         showContent();
     });
 }
