@@ -3,16 +3,16 @@ let currentSection = 'intro';
 let isAnimating = false;
 let grainActive = true;
 let soundActive = true; // Audio activado por defecto
+let videoReady = false; // Control de carga del video
+let videoStarted = false; // Control de si el video ya comenzó
+let pendingUnmute = false; // Si el usuario pidió sonido antes de que el video esté listo
 
 // Initialize the application
 function init() {
     console.log('Inicializando aplicación...');
     setupEventListeners();
-    hideLoadingScreen();
-    showContent();
-    setupVideoBackground();
-    setGrain(true); // Activar grano por defecto
-    setSound(true); // Activar sonido por defecto
+    setupVideoBackground(); // Primero cargar el video
+    // No mostrar contenido hasta que el video esté listo
 }
 
 // Setup event listeners
@@ -43,6 +43,10 @@ function setupEventListeners() {
             toggleSound();
         };
     }
+
+    // Eventos para habilitar audio con interacción del usuario
+    document.addEventListener('click', enableAudio, { once: true });
+    document.addEventListener('touchstart', enableAudio, { once: true });
 
     // Fullscreen
     document.addEventListener('keydown', (e) => {
@@ -259,18 +263,20 @@ function toggleSound() {
     
     if (video) {
         if (soundActive) {
-            // Intentar habilitar el audio
-            video.muted = false;
-            
-            // En móviles, intentar reproducir para habilitar audio
-            if (video.paused) {
-                video.play().catch(error => {
-                    console.log('No se pudo reproducir automáticamente:', error);
-                    // El usuario necesitará interactuar para habilitar audio
-                });
+            if (!videoReady) {
+                pendingUnmute = true;
+                // Si el video no está listo, solo guardamos la intención
+            } else {
+                video.muted = false;
+                video.volume = 0.7;
+                if (!videoStarted) {
+                    startVideoPlayback();
+                }
+                pendingUnmute = false;
             }
         } else {
             video.muted = true;
+            pendingUnmute = false;
         }
     }
     
@@ -306,13 +312,27 @@ function hideLoadingScreen() {
 
 // Show content
 function showContent() {
+    if (!videoReady) {
+        console.log('Video no está listo, esperando...');
+        return;
+    }
+    
     console.log('Mostrando contenido...');
+    
+    // Ocultar pantalla de carga
+    hideLoadingScreen();
+    
+    // Mostrar panel de contenido
     const contentPanel = document.querySelector('.content-panel');
     if (contentPanel) {
         setTimeout(() => {
             contentPanel.classList.add('active');
-        }, 1800);
+        }, 500);
     }
+    
+    // Activar efectos por defecto
+    setGrain(true);
+    setSound(true);
 }
 
 // Switch minimalista para el ruido
@@ -334,7 +354,17 @@ function setSound(active) {
     const soundSwitch = document.getElementById('sound-switch');
     
     if (video) {
-        video.muted = !active;
+        if (active) {
+            video.muted = false;
+            video.volume = 0.7;
+            
+            // Si el video no ha comenzado, iniciarlo
+            if (!videoStarted) {
+                startVideoPlayback();
+            }
+        } else {
+            video.muted = true;
+        }
     }
     
     if (soundSwitch) {
@@ -353,49 +383,162 @@ function setupVideoBackground() {
     const video = document.getElementById('vintage-video');
     if (video) {
         // Video local en assets/videos
-        video.src = 'assets/videos/Max Richter - November  (Music Video 2024).mp4';
-        video.load();
+        const videoPath = 'assets/videos/Max Richter - November  (Music Video 2024).mp4';
         
-        // Configurar para móviles
-        video.setAttribute('playsinline', '');
-        video.setAttribute('webkit-playsinline', '');
-        video.muted = false; // Audio habilitado por defecto
-        
-        // Habilitar audio con interacción del usuario
-        const enableAudio = () => {
-            if (video.muted && soundActive) {
-                video.muted = false;
-                console.log('Audio habilitado por interacción del usuario');
+        // Verificar si el archivo existe
+        fetch(videoPath, { method: 'HEAD' })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Archivo de video encontrado, configurando...');
+                    setupVideo(video, videoPath);
+                } else {
+                    console.log('Archivo de video no encontrado, usando fallback');
+                    setupFallback();
+                }
+            })
+            .catch(error => {
+                console.log('Error verificando archivo de video:', error);
+                setupFallback();
+            });
+    }
+}
+
+function setupVideo(video, videoPath) {
+    // Mostrar indicador de carga del video
+    const videoLoadingText = document.querySelector('.video-loading-text');
+    if (videoLoadingText) {
+        videoLoadingText.style.display = 'block';
+    }
+    
+    // Configurar para reproducción automática
+    video.setAttribute('autoplay', '');
+    video.setAttribute('loop', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('preload', 'auto'); // Precargar el video
+    
+    // Configurar volumen y estado inicial
+    video.volume = 0.7;
+    video.muted = true; // Comenzar silenciado por políticas de navegador
+    
+    // Establecer la fuente del video
+    video.src = videoPath;
+    
+    // Cargar el video
+    video.load();
+    
+    // Eventos de carga del video
+    video.addEventListener('loadedmetadata', function() {
+        console.log('Metadatos del video cargados');
+        if (videoLoadingText) {
+            videoLoadingText.textContent = 'Video cargado, iniciando reproducción...';
+        }
+    });
+    
+    video.addEventListener('loadeddata', function() {
+        console.log('Video cargado correctamente');
+        if (videoLoadingText) {
+            videoLoadingText.textContent = 'Video listo!';
+        }
+        videoReady = true;
+        // Si el usuario ya pidió sonido, activarlo ahora
+        if (pendingUnmute) {
+            video.muted = false;
+            video.volume = 0.7;
+            pendingUnmute = false;
+        }
+        startVideoPlayback();
+    });
+    
+    // Manejar errores de carga del video
+    video.addEventListener('error', function(e) {
+        console.log('Error cargando el video:', e);
+        if (videoLoadingText) {
+            videoLoadingText.textContent = 'Usando fondo alternativo...';
+        }
+        setupFallback();
+        // Mostrar contenido incluso si hay error
+        videoReady = true;
+        showContent();
+    });
+    
+    // Manejar cambios en el estado de reproducción
+    video.addEventListener('play', function() {
+        console.log('Video reproduciéndose');
+        videoStarted = true;
+        // Si el usuario ya pidió sonido, activarlo ahora
+        if (pendingUnmute) {
+            video.muted = false;
+            video.volume = 0.7;
+            pendingUnmute = false;
+        }
+    });
+    
+    video.addEventListener('pause', function() {
+        console.log('Video pausado');
+    });
+    
+    video.addEventListener('volumechange', function() {
+        console.log('Volumen cambiado:', video.volume, 'Muted:', video.muted);
+    });
+    
+    // Timeout de seguridad: mostrar contenido después de 5 segundos máximo
+    setTimeout(() => {
+        if (!videoReady) {
+            console.log('Timeout de carga del video, mostrando contenido');
+            if (videoLoadingText) {
+                videoLoadingText.textContent = 'Contenido listo!';
             }
-        };
-        
-        // Eventos para habilitar audio
-        document.addEventListener('click', enableAudio, { once: true });
-        document.addEventListener('touchstart', enableAudio, { once: true });
-        
-        // Manejar errores de carga del video
-        video.addEventListener('error', function() {
-            console.log('Error cargando el video, usando fallback');
-            // Fallback: usar un gradiente si el video no carga
-            const backgroundVideo = document.querySelector('.background-video');
-            if (backgroundVideo) {
-                backgroundVideo.style.background = 'linear-gradient(180deg, #000000 0%, #001122 30%, #003366 70%, #000000 100%)';
-            }
-        });
-        
-        // Log cuando el video se carga correctamente
-        video.addEventListener('loadeddata', function() {
-            console.log('Video cargado correctamente');
-        });
-        
-        // Manejar cambios en el estado de reproducción
-        video.addEventListener('play', function() {
-            console.log('Video reproduciéndose');
-        });
-        
-        video.addEventListener('pause', function() {
-            console.log('Video pausado');
-        });
+            videoReady = true;
+            showContent();
+        }
+    }, 5000);
+}
+
+// Función para iniciar la reproducción del video
+function startVideoPlayback() {
+    const video = document.getElementById('vintage-video');
+    if (!video || videoStarted) return;
+    
+    video.play().then(() => {
+        console.log('Video reproduciéndose automáticamente');
+        videoStarted = true;
+        showContent();
+    }).catch(error => {
+        console.log('No se pudo reproducir automáticamente:', error);
+        // Aún así mostrar contenido si el video está cargado
+        showContent();
+    });
+}
+
+// Función para habilitar audio con interacción del usuario
+function enableAudio() {
+    const video = document.getElementById('vintage-video');
+    if (!video || !soundActive) return;
+    if (!videoReady) {
+        pendingUnmute = true;
+        return;
+    }
+    if (!videoStarted) {
+        startVideoPlayback();
+    }
+    video.muted = false;
+    pendingUnmute = false;
+    console.log('Audio habilitado por interacción del usuario');
+}
+
+function setupFallback() {
+    // Fallback: usar un gradiente si el video no carga
+    const backgroundVideo = document.querySelector('.background-video');
+    if (backgroundVideo) {
+        backgroundVideo.style.background = 'linear-gradient(180deg, #000000 0%, #001122 30%, #003366 70%, #000000 100%)';
+        console.log('Fallback aplicado: gradiente de fondo');
+    }
+    
+    // Mostrar contenido incluso con fallback
+    if (!videoReady) {
+        videoReady = true;
+        showContent();
     }
 }
 
