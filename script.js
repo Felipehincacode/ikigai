@@ -405,10 +405,14 @@ function setupVideoBackground() {
 
 function setupVideo(video, videoPath) {
     const videoLoadingText = document.querySelector('.video-loading-text');
+    const fallbackMessage = document.getElementById('fallback-message');
+    const continueBtn = document.getElementById('continue-btn');
     if (videoLoadingText) {
         videoLoadingText.style.display = 'block';
         videoLoadingText.textContent = 'Cargando video...';
     }
+    if (fallbackMessage) fallbackMessage.style.display = 'none';
+    if (continueBtn) continueBtn.style.display = 'none';
     video.setAttribute('autoplay', '');
     video.setAttribute('loop', '');
     video.setAttribute('playsinline', '');
@@ -420,10 +424,17 @@ function setupVideo(video, videoPath) {
     video.load();
     let videoLoadTimeout = setTimeout(() => {
         if (!videoReady) {
-            if (videoLoadingText) videoLoadingText.textContent = 'No se pudo cargar el video. Usando fondo alternativo.';
-            setupFallback();
-            videoReady = true;
-            showContent();
+            if (videoLoadingText) videoLoadingText.textContent = '';
+            if (fallbackMessage) fallbackMessage.style.display = 'block';
+            if (continueBtn) continueBtn.style.display = 'inline-block';
+            // No ocultar loading screen hasta que el usuario decida
+            if (continueBtn) {
+                continueBtn.onclick = () => {
+                    setupFallback();
+                    videoReady = true;
+                    showContent();
+                };
+            }
         }
     }, 5000); // 5 segundos máximo
     video.addEventListener('loadedmetadata', function() {
@@ -435,20 +446,43 @@ function setupVideo(video, videoPath) {
         videoReady = true;
         video.currentTime = 10;
         clearTimeout(videoLoadTimeout);
+        if (fallbackMessage) fallbackMessage.style.display = 'none';
+        if (continueBtn) continueBtn.style.display = 'none';
         startVideoPlayback();
     });
     video.addEventListener('error', function(e) {
-        if (videoLoadingText) videoLoadingText.textContent = 'No se pudo cargar el video. Usando fondo alternativo.';
+        if (videoLoadingText) videoLoadingText.textContent = '';
+        if (fallbackMessage) fallbackMessage.style.display = 'block';
+        if (continueBtn) continueBtn.style.display = 'inline-block';
         clearTimeout(videoLoadTimeout);
-        setupFallback();
-        videoReady = true;
-        showContent();
+        if (continueBtn) {
+            continueBtn.onclick = () => {
+                setupFallback();
+                videoReady = true;
+                showContent();
+            };
+        }
     });
     video.addEventListener('play', function() {
         videoStarted = true;
     });
     video.addEventListener('pause', function() {});
     video.addEventListener('volumechange', function() {});
+    // Animación de sprites en pantalla de carga
+    startSpriteAnimation();
+}
+
+// Animación simple de sprites usando emojis (puedes cambiar por imágenes si tienes sprites)
+function startSpriteAnimation() {
+    const spriteDiv = document.getElementById('sprite-animation');
+    if (!spriteDiv) return;
+    const frames = ['🌊', '🌱', '🌞', '🌙', '✨', '🌊', '🌱', '🌞', '🌙', '✨'];
+    let frame = 0;
+    if (window.spriteInterval) clearInterval(window.spriteInterval);
+    window.spriteInterval = setInterval(() => {
+        spriteDiv.textContent = frames[frame % frames.length];
+        frame++;
+    }, 200);
 }
 
 // Función para iniciar la reproducción del video
@@ -498,6 +532,7 @@ function setupFallback() {
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM cargado, iniciando aplicación...');
+    startSpriteAnimation();
     init();
 });
 

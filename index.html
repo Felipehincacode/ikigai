@@ -14,8 +14,13 @@
             <div class="loader-bar">
                 <div class="loader-progress"></div>
             </div>
+            <div id="sprite-animation" style="margin: 20px auto; width: 64px; height: 64px;"></div>
             <div class="video-loading-text" style="display: none; margin-top: 20px; font-size: 14px; color: rgba(255,255,255,0.7);">
                 Preparando video de fondo...
+            </div>
+            <div id="fallback-message" style="display:none; margin-top: 20px; color: #ffb3b3; font-size: 16px;">
+                El video de fondo aún no carga.<br>¿Quieres ir navegando el contenido?
+                <br><button id="continue-btn" style="margin-top:10px; padding:8px 20px; background:#4ecdc4; color:#fff; border:none; border-radius:6px; font-size:16px; cursor:pointer;">SEGUIR SIN VIDEO</button>
             </div>
         </div>
     </div>
