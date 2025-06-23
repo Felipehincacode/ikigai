@@ -312,25 +312,21 @@ function hideLoadingScreen() {
 
 // Show content
 function showContent() {
-    if (!videoReady) {
-        console.log('Video no está listo, esperando...');
-        return;
-    }
-    
-    console.log('Mostrando contenido...');
-    
-    // Ocultar pantalla de carga
-    hideLoadingScreen();
-    
-    // Mostrar panel de contenido
+    console.log('Mostrando contenido');
+    const loadingScreen = document.getElementById('loading-screen');
     const contentPanel = document.querySelector('.content-panel');
-    if (contentPanel) {
+    
+    if (loadingScreen) {
+        loadingScreen.style.opacity = '0';
         setTimeout(() => {
-            contentPanel.classList.add('active');
+            loadingScreen.style.display = 'none';
         }, 500);
     }
     
-    // Activar efectos por defecto
+    if (contentPanel) {
+        contentPanel.classList.add('active');
+    }
+    
     setGrain(true);
     setSound(true);
 }
@@ -381,10 +377,48 @@ function setSound(active) {
 // Video de fondo vintage alegre
 function setupVideoBackground() {
     const video = document.getElementById('vintage-video');
+    const videoLoadingText = document.querySelector('.video-loading-text');
+    const fallbackMessage = document.getElementById('fallback-message');
+    const continueBtn = document.getElementById('continue-btn');
+
     if (video) {
-        // Video local en assets/videos
-        const videoPath = 'assets/videos/Max Richter - November  (Music Video 2024).mp4';
+        // Detectar si es móvil
+        const isMobile = window.innerWidth <= 768;
+        // Seleccionar la versión del video según el dispositivo
+        const videoPath = isMobile ? 
+            'assets/videos/background-mobile.webm' : 
+            'assets/videos/background-desktop.webm';
         
+        // Mostrar mensaje de carga
+        if (videoLoadingText) {
+            videoLoadingText.style.display = 'block';
+            videoLoadingText.textContent = 'Cargando video...';
+        }
+
+        // Ocultar mensaje de fallback inicialmente
+        if (fallbackMessage) {
+            fallbackMessage.style.display = 'none';
+        }
+
+        // Timer para mostrar fallback después de 5 segundos
+        setTimeout(() => {
+            if (!videoReady) {
+                console.log('Video no cargó en 5 segundos');
+                if (videoLoadingText) {
+                    videoLoadingText.style.display = 'none';
+                }
+                if (fallbackMessage) {
+                    fallbackMessage.style.display = 'block';
+                }
+                if (continueBtn) {
+                    continueBtn.onclick = () => {
+                        console.log('Usuario eligió continuar sin video');
+                        setupFallback();
+                    };
+                }
+            }
+        }, 5000);
+
         // Verificar si el archivo existe
         fetch(videoPath, { method: 'HEAD' })
             .then(response => {
@@ -392,12 +426,24 @@ function setupVideoBackground() {
                     console.log('Archivo de video encontrado, configurando...');
                     setupVideo(video, videoPath);
                 } else {
-                    console.log('Archivo de video no encontrado, usando fallback');
+                    console.log('Archivo de video no encontrado');
+                    if (videoLoadingText) {
+                        videoLoadingText.style.display = 'none';
+                    }
+                    if (fallbackMessage) {
+                        fallbackMessage.style.display = 'block';
+                    }
                     setupFallback();
                 }
             })
             .catch(error => {
                 console.log('Error verificando archivo de video:', error);
+                if (videoLoadingText) {
+                    videoLoadingText.style.display = 'none';
+                }
+                if (fallbackMessage) {
+                    fallbackMessage.style.display = 'block';
+                }
                 setupFallback();
             });
     }
@@ -407,70 +453,186 @@ function setupVideo(video, videoPath) {
     const videoLoadingText = document.querySelector('.video-loading-text');
     const fallbackMessage = document.getElementById('fallback-message');
     const continueBtn = document.getElementById('continue-btn');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressText = document.querySelector('.progress-text');
+
+    // Mostrar elementos de carga
     if (videoLoadingText) {
         videoLoadingText.style.display = 'block';
-        videoLoadingText.textContent = 'Cargando video...';
+        videoLoadingText.textContent = 'Preparando experiencia inmersiva...';
     }
     if (fallbackMessage) fallbackMessage.style.display = 'none';
-    if (continueBtn) continueBtn.style.display = 'none';
+    if (progressBar) progressBar.style.width = '0%';
+    if (progressText) progressText.textContent = '0%';
+
+    // Configurar video
     video.setAttribute('autoplay', '');
     video.setAttribute('loop', '');
     video.setAttribute('playsinline', '');
     video.setAttribute('webkit-playsinline', '');
     video.setAttribute('preload', 'auto');
     video.volume = 0.7;
-    video.muted = false;
+    video.muted = true;
     video.src = videoPath;
-    video.load();
-    let videoLoadTimeout = setTimeout(() => {
+
+    // Monitorear progreso de carga
+    let lastLoadedTime = 0;
+    const updateProgress = () => {
+        if (!video.buffered.length) return;
+        
+        const duration = video.duration;
+        const buffered = video.buffered.end(video.buffered.length - 1);
+        const progress = Math.min((buffered / duration) * 100, 100);
+        
+        if (progressBar) progressBar.style.width = `${progress}%`;
+        if (progressText) progressText.textContent = `${Math.round(progress)}%`;
+        
+        // Si el progreso aumentó, actualizar el tiempo de última carga
+        if (buffered > lastLoadedTime) {
+            lastLoadedTime = buffered;
+            clearTimeout(loadTimeout);
+            loadTimeout = setTimeout(checkProgress, 5000);
+        }
+    };
+
+    // Monitorear eventos de carga
+    video.addEventListener('progress', updateProgress);
+    video.addEventListener('timeupdate', updateProgress);
+    
+    // Timer para verificar si el video se estancó
+    let loadTimeout = setTimeout(checkProgress, 5000);
+
+    function checkProgress() {
         if (!videoReady) {
-            if (videoLoadingText) videoLoadingText.textContent = '';
+            console.log('Video no progresa, activando fallback');
+            if (videoLoadingText) videoLoadingText.style.display = 'none';
             if (fallbackMessage) fallbackMessage.style.display = 'block';
-            if (continueBtn) continueBtn.style.display = 'inline-block';
-            // No ocultar loading screen hasta que el usuario decida
             if (continueBtn) {
                 continueBtn.onclick = () => {
+                    console.log('Usuario eligió continuar sin video');
                     setupFallback();
-                    videoReady = true;
-                    showContent();
                 };
             }
         }
-    }, 5000); // 5 segundos máximo
-    video.addEventListener('loadedmetadata', function() {
+    }
+
+    // Event listeners del video
+    video.addEventListener('loadedmetadata', () => {
+        console.log('Video metadata cargada');
         video.currentTime = 10;
-        if (videoLoadingText) videoLoadingText.textContent = 'Video cargado, iniciando reproducción...';
     });
-    video.addEventListener('loadeddata', function() {
-        if (videoLoadingText) videoLoadingText.textContent = 'Video listo!';
+
+    video.addEventListener('loadeddata', () => {
+        console.log('Video datos cargados');
         videoReady = true;
         video.currentTime = 10;
-        clearTimeout(videoLoadTimeout);
-        if (fallbackMessage) fallbackMessage.style.display = 'none';
-        if (continueBtn) continueBtn.style.display = 'none';
+        if (progressBar) progressBar.style.width = '100%';
+        if (progressText) progressText.textContent = '100%';
         startVideoPlayback();
     });
-    video.addEventListener('error', function(e) {
-        if (videoLoadingText) videoLoadingText.textContent = '';
+
+    video.addEventListener('error', (e) => {
+        console.log('Error cargando video:', e);
+        if (videoLoadingText) videoLoadingText.style.display = 'none';
         if (fallbackMessage) fallbackMessage.style.display = 'block';
-        if (continueBtn) continueBtn.style.display = 'inline-block';
-        clearTimeout(videoLoadTimeout);
-        if (continueBtn) {
-            continueBtn.onclick = () => {
-                setupFallback();
-                videoReady = true;
-                showContent();
-            };
-        }
+        setupFallback();
     });
-    video.addEventListener('play', function() {
-        videoStarted = true;
-    });
-    video.addEventListener('pause', function() {});
-    video.addEventListener('volumechange', function() {});
-    // Animación de sprites en pantalla de carga
-    startSpriteAnimation();
+
+    // Iniciar carga
+    video.load();
 }
+
+function setupFallback() {
+    console.log('Aplicando fallback');
+    const backgroundVideo = document.querySelector('.background-video');
+    const loadingScreen = document.getElementById('loading-screen');
+    const video = document.getElementById('vintage-video');
+    
+    if (video) {
+        video.style.opacity = '0';
+        setTimeout(() => {
+            video.style.display = 'none';
+        }, 1000);
+    }
+    
+    if (backgroundVideo) {
+        // Agregar clase para activar animación
+        backgroundVideo.classList.add('fallback');
+        
+        // Precargar imágenes para el efecto de partículas
+        const particles = [];
+        const particleCount = 50;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.cssText = `
+                position: absolute;
+                width: ${Math.random() * 3}px;
+                height: ${Math.random() * 3}px;
+                background: rgba(255, 255, 255, ${Math.random() * 0.5});
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                animation: float ${5 + Math.random() * 10}s linear infinite;
+                opacity: 0;
+                transition: opacity 1s ease;
+            `;
+            backgroundVideo.appendChild(particle);
+            particles.push(particle);
+        }
+        
+        // Mostrar partículas gradualmente
+        setTimeout(() => {
+            particles.forEach((particle, index) => {
+                setTimeout(() => {
+                    particle.style.opacity = '1';
+                }, index * 50);
+            });
+        }, 500);
+    }
+    
+    videoReady = true;
+    
+    if (loadingScreen) {
+        // Agregar animación de desvanecimiento
+        const waves = loadingScreen.querySelectorAll('.wave');
+        waves.forEach((wave, index) => {
+            wave.style.animation = 'none';
+            wave.style.transform = 'scale(0)';
+            setTimeout(() => {
+                wave.style.transition = 'transform 0.5s ease';
+                wave.style.transform = 'scale(1.5)';
+                setTimeout(() => {
+                    wave.style.transform = 'scale(0)';
+                }, 200);
+            }, index * 100);
+        });
+        
+        setTimeout(() => {
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        }, 1000);
+    }
+    
+    showContent();
+}
+
+// Agregar estilos para las partículas
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes float {
+        from { transform: translateY(0) rotate(0deg); }
+        to { transform: translateY(-100vh) rotate(360deg); }
+    }
+    
+    .particle {
+        pointer-events: none;
+        z-index: 1;
+    }
+`;
+document.head.appendChild(style);
 
 // Animación simple de sprites usando emojis (puedes cambiar por imágenes si tienes sprites)
 function startSpriteAnimation() {
@@ -512,21 +674,6 @@ function enableAudio() {
     video.muted = false;
     pendingUnmute = false;
     console.log('Audio habilitado por interacción del usuario');
-}
-
-function setupFallback() {
-    // Fallback: usar un gradiente si el video no carga
-    const backgroundVideo = document.querySelector('.background-video');
-    if (backgroundVideo) {
-        backgroundVideo.style.background = 'linear-gradient(180deg, #000000 0%, #001122 30%, #003366 70%, #000000 100%)';
-        console.log('Fallback aplicado: gradiente de fondo');
-    }
-    
-    // Mostrar contenido incluso con fallback
-    if (!videoReady) {
-        videoReady = true;
-        showContent();
-    }
 }
 
 // Initialize everything when DOM is loaded
